@@ -20,25 +20,29 @@ JSON?openAgent&start=%s&count=%s&_=1463533372174'
 urlformatnewsitem = 'http://www1.toronto.ca/wps/portal/contentonly?vgnextoid\
 =af71df79b2df6410VgnVCM10000071d60f89RCRD&nrkey=%s'
 
+downloadedpages = []
 start = 1
 pagecount = 10
-results = []
 sleeplvl = 5
-
 while start <= 5 * 10:
     url = urlformat % (start, pagecount)
     print 'requesting url: %s' % url
     request = requests.get(url)
+    downloadedpages.append(request.text)
+    start = start + pagecount
+    print 'sleeping for %s seconds' % sleeplvl
+    time.sleep(sleeplvl)
+
+
+results = []
+for page in downloadedpages:
     print 'parsing results...'
-    jsontext = request.text.replace('jsonCallBack(', '')[:-4]
+    jsontext = page.replace('jsonCallBack(', '')[:-4]
     newsitems = json.loads(jsontext)
     parsedresults = \
         [parse(item, urlformatnewsitem) for item in newsitems['Newsroom']]
     print 'extracted %s results' % len(parsedresults)
     results.extend(parsedresults)
-    start = start + pagecount
-    print 'sleeping for %s seconds' % sleeplvl
-    time.sleep(sleeplvl)
 
 print 'completed parsing with %s results' % len(results)
 

@@ -19,23 +19,27 @@ def parse(item, base_url):
 urlformat = 'https://www.burlington.ca/en/Modules/News/search.aspx?feedId=\
 0b11ae3a-b049-4262-8ca4-762062555538&page=%s'
 
-results = []
+
+htmlpages = []
 page = 1
 sleeplvl = 5
 while page <= 5:
     url = urlformat % page
     print 'requesting url: %s' % url
     request = requests.get(url)
-    html = request.text
+    htmlpages.append(request.text)
+    page = page + 1
+    print 'sleeping for %s seconds' % sleeplvl
+    time.sleep(sleeplvl)
+
+results = []
+for html in htmlpages:
     print 'parsing results...'
     soup = BeautifulSoup(html, "lxml")
     soupitems = soup.select('.newsItem')
     parsedresults = [parse(row, url) for row in soupitems]
     print 'extracted %s results' % len(parsedresults)
     results.extend(parsedresults)
-    page = page + 1
-    print 'sleeping for %s seconds' % sleeplvl
-    time.sleep(sleeplvl)
 
 print 'completed parsing with %s results' % len(results)
 
