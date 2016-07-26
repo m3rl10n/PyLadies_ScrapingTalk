@@ -23,7 +23,7 @@ request = requests.get(url)
 html = request.text
 
 print 'parsing results...'
-soup = BeautifulSoup(html, "lxml")
+soup = BeautifulSoup(html)
 souprows = soup.select(".blockcontentclear tr")
 
 results = [parse(row, url) for row in souprows]
