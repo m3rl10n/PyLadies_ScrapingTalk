@@ -35,7 +35,7 @@ while page <= 5:
 results = []
 for html in htmlpages:
     print 'parsing results...'
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html)
     soupitems = soup.select('.newsItem')
     parsedresults = [parse(row, url) for row in soupitems]
     print 'extracted %s results' % len(parsedresults)
