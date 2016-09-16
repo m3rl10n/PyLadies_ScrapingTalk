@@ -6,15 +6,6 @@ import unicodecsv
 import time
 import json
 
-
-def parse(item, urlformatnewsitem):
-    title = item['txtTitle']
-    date = '%s-%s-%s' % (item['dtPubDate']['year'],
-                         item['dtPubDate']['month'], item['dtPubDate']['day'])
-    url = urlformatnewsitem % item['txtID']
-    return (title, date, url)
-
-
 urlformat = 'http://wx.toronto.ca/inter/it/newsrel.nsf/ag_createNewsRelease\
 JSON?openAgent&start=%s&count=%s&_=1463533372174'
 urlformatnewsitem = 'http://www1.toronto.ca/wps/portal/contentonly?vgnextoid\
@@ -23,7 +14,7 @@ urlformatnewsitem = 'http://www1.toronto.ca/wps/portal/contentonly?vgnextoid\
 downloadedpages = []
 start = 1
 pagecount = 10
-sleeplvl = 5
+sleeplvl = 3
 while start <= 5 * 10:
     url = urlformat % (start, pagecount)
     print 'requesting url: %s' % url
@@ -34,10 +25,19 @@ while start <= 5 * 10:
     time.sleep(sleeplvl)
 
 
+	
+def parse(item, urlformatnewsitem):
+    title = item['txtTitle']
+    date = '%s-%s-%s' % (item['dtPubDate']['year'],
+                         item['dtPubDate']['month'], item['dtPubDate']['day'])
+    url = urlformatnewsitem % item['txtID']
+    return (title, date, url)
+
 results = []
 for page in downloadedpages:
     print 'parsing results...'
     jsontext = page.replace('jsonCallBack(', '')[:-4]
+    jsontext = jsontext.replace('\t', '\\t')
     newsitems = json.loads(jsontext)
     parsedresults = \
         [parse(item, urlformatnewsitem) for item in newsitems['Newsroom']]

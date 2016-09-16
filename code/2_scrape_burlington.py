@@ -7,22 +7,12 @@ import urlparse
 import unicodecsv
 import time
 
-
-def parse(item, base_url):
-    title = item.a.text.strip()
-    url = urlparse.urljoin(base_url, item.a['href'])
-    date = item.select('.newsItem_PostedDate')[0].text
-    date = date.replace('Posted ', '').strip()
-    return (title, date, url)
-
-
 urlformat = 'https://www.burlington.ca/en/Modules/News/search.aspx?feedId=\
 0b11ae3a-b049-4262-8ca4-762062555538&page=%s'
 
-
 htmlpages = []
 page = 1
-sleeplvl = 5
+sleeplvl = 3
 while page <= 5:
     url = urlformat % page
     print 'requesting url: %s' % url
@@ -31,6 +21,14 @@ while page <= 5:
     page = page + 1
     print 'sleeping for %s seconds' % sleeplvl
     time.sleep(sleeplvl)
+
+
+def parse(item, base_url):
+    title = item.a.text.strip()
+    url = urlparse.urljoin(base_url, item.a['href'])
+    date = item.select('.newsItem_PostedDate')[0].text
+    date = date.replace('Posted ', '').strip()
+    return (title, date, url)
 
 results = []
 for html in htmlpages:
